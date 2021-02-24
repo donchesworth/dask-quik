@@ -5,17 +5,17 @@ import dask.array as da
 from typing import Union, Tuple, Optional, Dict, Any, List
 from argparse import Namespace
 import warnings
-import solution_prediction.utils as su
+import dask_quik.utils as su
 
 try:
     import dask_cudf as dc
     import cudf
 except ImportError:
     warnings.warn(
-        "solution_prediction.cartesian unable to import GPU libraries, \
+        "dask_quik.cartesian unable to import GPU libraries, \
         importing a dummy dc.DataFrame"
     )
-    import solution_prediction.dummy as dc
+    import dask_quik.dummy as dc
 
 # allow the ability of a dask_cudf.DataFrame or a dd.DataFrame
 dc_dd = Union[dc.DataFrame, dd.DataFrame]
@@ -80,6 +80,4 @@ def dask_cudf_cartesian(odf: dc_dd, colv: List[str], args: Namespace) -> dc_dd:
     gv_list[1] = gv_list[1].compute()
     odf = gv_list[0].merge(gv_list[1], how="inner", on="cartesian")
     odf = odf.drop("cartesian", axis=1)
-    odf = su.shrink_dtypes(odf, {"user_num": "int32", "item_num": "int32"})
     return odf
-
