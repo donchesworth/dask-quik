@@ -1,0 +1,57 @@
+{
+    "user_number": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+    ],
+    "item_id": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8        
+    ],
+    "user_item": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        false
+    ]
+}
+
