@@ -5,7 +5,7 @@ import dask.array as da
 from typing import Union, Tuple, Optional, Dict, Any, List
 from argparse import Namespace
 import warnings
-import dask_quik.utils as su
+import dask_quik.utils as du
 
 try:
     import dask_cudf as dc
@@ -26,13 +26,13 @@ def add_cartesian_dummy(odf: dc_dd) -> dc_dd:
     0 to force a cartesian join using merge.
 
     Args:
-        odf (dc_dd): original dask_cudf or dd 
+        odf (dc_dd): original dask_cudf or dd
 
     Returns:
         dc_dd: dummy dask_cudf or dd
-    """    
+    """
     odf["cartesian"] = 0
-    odf = su.shrink_dtypes(odf, {"cartesian": "int8"})
+    odf = du.shrink_dtypes(odf, {"cartesian": "int8"})
     return odf
 
 
@@ -67,7 +67,7 @@ def dask_cudf_cartesian(odf: dc_dd, colv: List[str], args: Namespace) -> dc_dd:
             .reset_index(drop=True)
             for col in colv
         ]
-    else: 
+    else:
         gv_list = [
             odf[[col, "cartesian"]]
             .set_index(col)
@@ -81,3 +81,29 @@ def dask_cudf_cartesian(odf: dc_dd, colv: List[str], args: Namespace) -> dc_dd:
     odf = gv_list[0].merge(gv_list[1], how="inner", on="cartesian")
     odf = odf.drop("cartesian", axis=1)
     return odf
+
+
+def indexize(
+    dc: dc_dd, cnts: Dict[str, int], colv: List[str], rmcols: Optional[bool] = False
+) -> dc_dd:
+    """create an index for the permutation of all values. Usually two columns,
+    this takes the max of each, and indexes from 0 to max all the possible permutations.
+
+    Args:
+        dc (dc_dd): the dask_cudf or dask df to be indexized
+        cnts (Dict[str, int]): the counts of each column for permutations
+        colv (List[str]): the columns to be indexized
+        rmcols (Optional[bool], optional): whether the original columns should be 
+        removed. Defaults to False.
+
+    Returns:
+        dc_dd: The final indexized dask_cudf or dask dataframe
+    """
+    col2max = cnts[colv[1]]
+    idx = colv[0][:1] + colv[1][:1] + "_index"
+    dc[idx] = (dc[colv[0]] - 1) * col2max + dc[colv[1]] - 1
+    dc = dc.persist()
+    dc = dc.set_index(idx)
+    if rmcols:
+        dc = dc.drop(colv, axis=1)
+    return dc
