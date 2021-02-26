@@ -3,8 +3,10 @@ services:
   - docker
 before_install:
   - echo $GITHUB_PAT | docker login docker.pkg.github.com -u donchesworth --password-stdin
-  - docker pull docker.pkg.github.com/donchesworth/dask-quik/dask-quik-pytest:v1
-  - docker run -it docker.pkg.github.com/donchesworth/dask-quik/dask-quik-pytest:v1
+  - docker pull docker.pkg.github.com/donchesworth/dask-quik/rapids_dask:latest
+  - docker run -it -d docker.pkg.github.com/donchesworth/dask-quik/rapids_dask:latest
+install:
+  - skip
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
