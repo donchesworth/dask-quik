@@ -1,15 +1,8 @@
 language: python
-python:
-  - 3.6
-  - 3.7
-  - 3.8
+services:
+  - docker
 before_install:
-  - python --version
-  - pip install -U pip
-  - pip install -U pytest
-  - pip install codecov
-install:
-  - pip install ".[test]" . # install package + test dependencies
+  - docker pull docker.pkg.github.com/donchesworth/dask-quik/dask-quik-pytest:v1
 script: pytest # run tests
 after_success:
   - codecov # submit coverage
