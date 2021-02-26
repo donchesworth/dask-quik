@@ -2,6 +2,7 @@ language: python
 services:
   - docker
 before_install:
+  - echo $GITHUB_PAT | docker login docker.pkg.github.com -u donchesworth --password-stdin
   - docker pull docker.pkg.github.com/donchesworth/dask-quik/dask-quik-pytest:v1
 script: pytest # run tests
 after_success:
