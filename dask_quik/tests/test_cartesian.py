@@ -6,8 +6,8 @@ from argparse import Namespace
 import dask.dataframe as dd
 import dask_quik.cartesian as dqcart
 
-SAMPLE = Path.cwd().joinpath("tests", "sample_data.json")
-FINAL = Path.cwd().joinpath("tests", "final_data.json")
+SAMPLE = Path.cwd().joinpath("dask_quik", "tests", "sample_data.json")
+FINAL = Path.cwd().joinpath("dask_quik", "tests", "final_data.json")
 
 @pytest.fixture
 def cols_dict(scope="module"):
