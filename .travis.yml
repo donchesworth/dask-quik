@@ -3,10 +3,10 @@ services:
   - docker
 before_install:
   - echo $GITHUB_PAT | docker login docker.pkg.github.com -u donchesworth --password-stdin
-  - docker pull docker.pkg.github.com/donchesworth/dask-quik/rapids_dask:latest
+  - docker build --tag dask-quik-test:latest .
 install:
   - skip
 script:
-  - docker run -it -d docker.pkg.github.com/donchesworth/dask-quik/rapids_dask:latest
+  - docker run -it dask-quik-test:latest
 after_success:
   - codecov # submit coverage
