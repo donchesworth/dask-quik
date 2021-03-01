@@ -24,12 +24,14 @@ def cols_dict(scope="module"):
     }
     return cols
 
+
 @pytest.fixture
 def sample_data(scope="module"):
     """sample user/item dataset"""
     with open(SAMPLE) as f:
         df = pd.DataFrame(json.load(f))
     return df
+
 
 @pytest.fixture
 def final_data(scope="module"):
@@ -116,13 +118,17 @@ def test_dask_cudf(sample_data, args):
 def test_cartesian_df(sample_data, colv, args):
     """create a dask cartesian df. If gpus, 
     output should be a dask_cudf df, else dask df"""
-    ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
-    sm = dqcart.dask_cudf_cartesian(ddf, colv, args)
     if bool(args.gpus):
+        import cudf
         import dask_cudf
+        cdf = cudf.from_pandas(sample_data)
+        dcdf = dask_cudf.from_cudf(cdf, npartitions=args.partitions)
+        sm = dqcart.dask_cudf_cartesian(dcdf, colv, args)
         assert isinstance(sm, dask_cudf.DataFrame)
     else:
-        assert isinstance(ddf, dd.DataFrame)
+        ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
+        sm = dqcart.dask_cudf_cartesian(ddf, colv, args)
+        assert isinstance(sm, dd.DataFrame)
 
 
 def test_indexized_df(sample_data, counts_dict, colv, args):
@@ -143,7 +149,13 @@ def test_indexized_cartesian(sample_data, counts_dict, colv, args):
 def test_sparse_matrix(final_data, sample_data, counts_dict, colv, tcol, args):
     """create an indexed cartesian df. If gpus, 
     output should be a dask_cudf df, else dask df"""
-    ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
+    if bool(args.gpus):
+        import cudf
+        import dask_cudf
+        cdf = cudf.from_pandas(sample_data)
+        ddf = dask_cudf.from_cudf(cdf, npartitions=args.partitions)
+    else:
+        ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
     sm = dqcart.dask_cudf_cartesian(ddf.copy(), colv, args)
     sm = dqcart.indexize(sm, counts_dict, colv)
     ddf = dqcart.indexize(ddf, counts_dict, colv)
@@ -161,5 +173,7 @@ def test_sparse_matrix(final_data, sample_data, counts_dict, colv, tcol, args):
     )
     sm[tcol] = sm[tcol].fillna(False)
     sm = sm.compute()
+    if bool(args.gpus): 
+        sm = sm.sort_index().to_pandas()
     assert(sm.equals(final_data))
     print(sm.equals(final_data))
