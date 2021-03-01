@@ -6,3 +6,4 @@ distributed>=2.29.0
 pandas>=1.1
 pytest
 pytest-cov
+codecov

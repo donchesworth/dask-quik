@@ -9,6 +9,12 @@ import dask_quik.cartesian as dqcart
 SAMPLE = Path.cwd().joinpath("dask_quik", "tests", "sample_data.json")
 FINAL = Path.cwd().joinpath("dask_quik", "tests", "final_data.json")
 
+
+# @pytest.mark.parametrize("gpus", [0, 1])
+# def test_eval(test_input, expected):
+#     assert eval(test_input) == expected
+
+
 @pytest.fixture
 def cols_dict(scope="module"):
     """sample column names"""
@@ -87,7 +93,6 @@ def test_cudf_df(sample_data, args):
         import cudf
         cdf = cudf.from_pandas(sample_data)
         assert isinstance(cdf, cudf.DataFrame)
-        print("cudf created!")
     else:
         with pytest.raises(Exception) as e_info:
             import cudf
@@ -102,7 +107,6 @@ def test_dask_cudf(sample_data, args):
         cdf = cudf.from_pandas(sample_data)
         dcdf = dask_cudf.from_cudf(cdf, npartitions=args.partitions)
         assert isinstance(dcdf, dask_cudf.DataFrame)
-        print("dask_cudf created")
     else:
         with pytest.raises(Exception) as e_info:
             import dask_cudf
@@ -117,10 +121,8 @@ def test_cartesian_df(sample_data, colv, args):
     if bool(args.gpus):
         import dask_cudf
         assert isinstance(sm, dask_cudf.DataFrame)
-        print("made a dask_cudf cartesian df")
     else:
         assert isinstance(ddf, dd.DataFrame)
-        print("made a dask cartesian df")
 
 
 def test_indexized_df(sample_data, counts_dict, colv, args):
