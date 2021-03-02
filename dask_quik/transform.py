@@ -1,0 +1,35 @@
+import pandas as pd
+import dask.dataframe as dd
+from typing import Union
+from argparse import Namespace
+import warnings
+
+try:
+    import dask_cudf as dc
+    import cudf
+except ImportError:
+    warnings.warn(
+        "dask_quik.transform unable to import GPU libraries, \
+        importing a dummy dc.DataFrame"
+    )
+    import dask_quik.dummy as dc
+
+# allow the ability of a dask_cudf.DataFrame or a dd.DataFrame
+dc_dd = Union[dc.DataFrame, dd.DataFrame]
+
+
+def scatter_and_gpu(cdf: pd.DataFrame, args: Namespace) -> dc_dd:
+    """First convert a pandas dataframe to a dask dataframe (scatter)
+    and then if there's a gpu, move it to the gpu.
+
+    Args:
+        cdf (pd.DataFrame): initial df
+        args (Namespace): arguments
+
+    Returns:
+        cdf dc_dd: the final df
+    """
+    cdf = dd.from_pandas(cdf, npartitions=args.partitions)
+    if bool(args.gpus):
+        cdf = cdf.map_partitions(cudf.DataFrame.from_pandas)
+    return cdf
