@@ -6,6 +6,7 @@ from typing import Union, Tuple, Optional, Dict, Any, List
 from argparse import Namespace
 import warnings
 import dask_quik.utils as du
+import time
 
 try:
     import dask_cudf as dc
@@ -107,3 +108,57 @@ def indexize(
     if rmcols:
         dc = dc.drop(colv, axis=1)
     return dc
+
+
+def sparse_cudf_matrix(
+    gdf: dc_dd,
+    cols: Dict[str, Any],
+    cnts: Dict[str, int],
+    colk: List[str],
+    args: Namespace,
+) -> dc_dd:
+    """Create an sparse matrix of true customer data within the total
+    universe of customer data (cartesian product).
+    - determines column names
+    - creates the true set
+    - creates the sparse matrix (cudf_cartesian)
+    - notes which in the sparse matrix are true, false
+
+    Args:
+        gdf (dc_dd): dataframe to create sparse matrix
+        cols (Dict[str, Any]): dictionary of column type and column name
+        cnts (Dict[str, int]): [description]
+        colk (List[str]): [description]
+        args (Namespace): [description]
+
+    Returns:
+        dc_dd: dask_cudf or dd final sparse matrix
+    """
+    # column name stuff
+    st = time.time()
+    tcol = "_".join(colk)
+    colv = [cols[k] for k in colk]
+    # create the cartesian product
+    gdf = gdf[colv].drop_duplicates(split_out=args.partitions)
+    sm = dask_cudf_cartesian(gdf.copy(), colv, args)
+    print("created the " + tcol + " cartesian product in " + du.sec_str(st), flush=True)
+    sm = indexize(sm, cnts, colv)
+    # idx = sm.index.name
+    gdf = indexize(gdf, cnts, colv)
+    gdf[tcol] = True
+    if not bool(args.gpus):
+        colv = None
+        gdf = gdf[[tcol]]
+    sm = sm.merge(
+        gdf,
+        how="left",
+        on = colv,
+        npartitions=args.partitions,
+        left_index=True,
+        right_index=True
+    )
+    print("indexed and merged in " + du.sec_str(st), flush=True)
+    # sm = sm.reset_index().rename(columns={'index':idx})
+    del gdf
+    sm[tcol] = sm[tcol].fillna(False)
+    return sm
