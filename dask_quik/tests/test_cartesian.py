@@ -57,6 +57,7 @@ def tcol(cols_dict, scope="module"):
     tcol = "_".join(cols_dict.keys())
     return tcol
 
+
 @pytest.fixture
 def counts_dict(sample_data, scope="module"):
     """unique counts for sample_data"""
@@ -66,22 +67,15 @@ def counts_dict(sample_data, scope="module"):
     }
     return counts
 
+
 @pytest.fixture
-def args(gpus):
+def args(gpus, has_gpu):
     """sample args namespace"""    
     args = Namespace()
     args.gpus = gpus
     args.has_gpu = has_gpu
     args.partitions = 2
     return args
-
-
-def test_arg_gpus(gpus):
-    """check gpus options selected"""
-    if gpus == 0:
-        print("gpus is zero")
-    elif gpus > 0:
-        print("gpus is greater than 0")
 
 
 def test_dask_df(sample_data, args):
@@ -97,9 +91,8 @@ def test_cudf_df(sample_data, args):
         cdf = cudf.from_pandas(sample_data)
         assert isinstance(cdf, cudf.DataFrame)
     elif bool(args.gpus):
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(ImportError):
             import cudf
-        print(e_info)
     else:
         pass
 
@@ -113,9 +106,8 @@ def test_dask_cudf(sample_data, args):
         dcdf = dask_cudf.from_cudf(cdf, npartitions=args.partitions)
         assert isinstance(dcdf, dask_cudf.DataFrame)
     elif bool(args.gpus):
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(ImportError):
             import dask_cudf
-        print(e_info)
     else:
         pass
 
@@ -131,13 +123,13 @@ def test_cartesian_df(sample_data, colv, args):
         sm = dqcart.dask_cudf_cartesian(dcdf, colv, args)
         assert isinstance(sm, dask_cudf.DataFrame)
     elif bool(args.gpus):
-        with pytest.raises(Exception) as e_info:
+        with pytest.raises(ImportError):
             import dask_cudf
-        print(e_info)        
     else:
         ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
         sm = dqcart.dask_cudf_cartesian(ddf, colv, args)
         assert isinstance(sm, dd.DataFrame)
+
 
 def test_indexized_df(sample_data, counts_dict, colv, args):
     """create an indexed df. If gpus, 
@@ -150,27 +142,32 @@ def test_indexized_cartesian(sample_data, counts_dict, colv, args):
     """create an indexed cartesian df. If gpus, 
     output should be a dask_cudf df, else dask df"""
     ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
-    sm = dqcart.dask_cudf_cartesian(ddf, colv, args)
-    sm = dqcart.indexize(sm, counts_dict, colv)
+    if bool(args.gpus) and not args.has_gpu:
+        with pytest.raises(AttributeError):
+            sm = dqcart.dask_cudf_cartesian(ddf, colv, args)
+            sm = dqcart.indexize(sm, counts_dict, colv)
+    else: 
+        sm = dqcart.dask_cudf_cartesian(ddf, colv, args)    
+        sm = dqcart.indexize(sm, counts_dict, colv)
 
 
 def test_sparse_matrix(final_data, sample_data, cols_dict, counts_dict, colk, args):
     """create an indexed cartesian df. If gpus, 
     output should be a dask_cudf df, else dask df"""
-    if bool(args.gpus) and args.has_gpu:
+    if bool(args.gpus) and not args.has_gpu:
+        with pytest.raises(ImportError):
+            import cudf
+        return
+    elif bool(args.gpus):
         import cudf
         import dask_cudf
         cdf = cudf.from_pandas(sample_data)
         gdf = dask_cudf.from_cudf(cdf, npartitions=args.partitions)
-    elif bool(args.gpus):
-        with pytest.raises(Exception) as e_info:
-            import dask_cudf
-        print(e_info)
-        return
     else:
         gdf = dd.from_pandas(sample_data, npartitions=args.partitions)
     sm = dqcart.sparse_cudf_matrix(gdf, cols_dict, counts_dict, colk, args)
     if bool(args.gpus): 
         sm = sm.sort_index().to_pandas()
+    else: 
+        sm = sm.compute()
     assert(sm.equals(final_data))
-    print(sm.equals(final_data))
