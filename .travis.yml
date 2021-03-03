@@ -9,4 +9,4 @@ install:
 script:
   - docker run -it dask-quik-test:latest
 after_success:
-  - codecov # submit coverage
+  - bash <(curl -s https://codecov.io/bash)
