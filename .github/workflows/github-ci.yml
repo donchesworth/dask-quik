@@ -35,9 +35,9 @@ jobs:
           file: Dockerfile
           push: false
           tags: donchesworth/dask-quik-test:latest
-  container:
+  container_run:
     runs-on: ubuntu-latest
-    image: donchesworth/dask-quik-test:latest
+    container: donchesworth/dask-quik-test:latest
     steps:
       -
         name: Run container

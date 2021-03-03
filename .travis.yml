@@ -1,10 +1,10 @@
-language: python
-services:
-  - docker
-before_install:
-  - echo $GITHUB_PAT | docker login ghcr.io -u donchesworth --password-stdin
-  - docker build --tag dask-quik-test:latest .
-install:
-  - skip
-script:
-  - docker run -it dask-quik-test:latest
+# language: python
+# services:
+#   - docker
+# before_install:
+#   - echo $GITHUB_PAT | docker login ghcr.io -u donchesworth --password-stdin
+#   - docker build --tag dask-quik-test:latest .
+# install:
+#   - skip
+# script:
+#   - docker run -it dask-quik-test:latest
