@@ -33,15 +33,22 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: false
+          push: true
           tags: donchesworth/dask-quik-test:latest
-  container_run:
-    runs-on: ubuntu-latest
-    container: donchesworth/dask-quik-test:latest
-    steps:
       -
         name: Run container
         run: /opt/dq/entrypoint.sh
+        uses: ghcr.io/donchesworth/dask-quik-test:latest
+      # -
+      #   name: Run container
+      #   uses: actions/dask-quik-test-action@v1
+  # container_run:
+  #   runs-on: ubuntu-latest
+  #   container: donchesworth/dask-quik-test:latest
+  #   steps:
+  #     -
+  #       name: Run container
+  #       run: /opt/dq/entrypoint.sh
       # - 
       #   name: Run container
       #   uses: addnab/docker-run-action@v2
