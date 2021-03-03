@@ -6,6 +6,7 @@ from typing import Union, Tuple, Optional, Dict, Any, List
 from argparse import Namespace
 import warnings
 import dask_quik.utils as du
+import dask_quik.transform as dt
 import time
 
 try:
@@ -158,7 +159,7 @@ def sparse_cudf_matrix(
         right_index=True
     )
     print("indexed and merged in " + du.sec_str(st), flush=True)
-    # sm = sm.reset_index().rename(columns={'index':idx})
+    sm = dt.dc_sort_index(sm)
     del gdf
     sm[tcol] = sm[tcol].fillna(False)
     return sm

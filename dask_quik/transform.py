@@ -52,4 +52,20 @@ def gpu_sort_cpu(gdf: dc.DataFrame, idx_col: str) -> dd.DataFrame:
     gdf = gdf.set_index(idx_col)
     cdf = gdf.map_partitions(lambda df: df.to_pandas())
     print("sorted and moved to cpu in " + du.sec_str(st))
-    return cdf    
+    return cdf
+
+
+def dc_sort_index(dcdf: dc.DataFrame) -> dc.DataFrame:
+    """emulate pandas sort_index for a dask_cudf DataFrame.
+    This pulls the index into a column, then uses set_index.
+
+    Args:
+        dcdf (dc.DataFrame): original dask_cudf DataFrame
+
+    Returns:
+        dc.DataFrame: newly sorted index for dask_cudf DataFrame
+    """    
+    idx = dcdf.index.name
+    dcdf = dcdf.reset_index().rename(columns={'index':idx})
+    dcdf = dcdf.set_index(idx)
+    return dcdf
