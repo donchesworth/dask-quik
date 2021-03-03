@@ -1,4 +1,4 @@
-FROM docker.pkg.github.com/donchesworth/dask-quik/rapids_dask:latest
+FROM ghcr.io/donchesworth/rapids_dask:latest
 
 # Labels
 LABEL maintainer="Don Chesworth<donald.chesworth@gmail.com>"
