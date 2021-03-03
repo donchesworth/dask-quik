@@ -28,17 +28,27 @@ jobs:
           password: ${{ secrets.CR_PAT }}
       -
         name: Build and push
+        id: docker_build
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: true
+          file: Dockerfile
+          push: false
           tags: donchesworth/dask-quik-test:latest
-      - 
-        name: Test with pytest
-        run: docker run -it dask-quik-test:latest
-      - 
-        name: Upload codecov
-        uses: codecov/codecov-action@v1
-        with:
-          fail_ci_if_error: false
-          verbose: true
+  my_run:
+    container: donchesworth/dask-quik-test:latest
+      # - 
+      #   name: Run container
+      #   uses: addnab/docker-run-action@v2
+      #   with:
+      #     image: donchesworth/dask-quik-test:latest
+      #     run: /opt/dq/entrypoint.sh
+      # - 
+      #   name: Test with pytest
+      #   run: docker run -it dask-quik-test:latest
+      # - 
+      #   name: Upload codecov
+      #   uses: codecov/codecov-action@v1
+      #   with:
+      #     fail_ci_if_error: false
+      #     verbose: true
