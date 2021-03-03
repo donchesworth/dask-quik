@@ -8,5 +8,3 @@ install:
   - skip
 script:
   - docker run -it dask-quik-test:latest
-after_success:
-  - bash <(curl -s https://codecov.io/bash)

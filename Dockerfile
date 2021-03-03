@@ -12,6 +12,7 @@ COPY ./ /opt/dq/
 RUN pip install .
 
 RUN chgrp -R 0 /opt/dq/ && \
-    chmod -R g+rwX /opt/dq/
+    chmod -R g+rwX /opt/dq/ && \
+    chmod +x /opt/dq/entrypoint.sh
 
-ENTRYPOINT ["pytest"]
+ENTRYPOINT ["/opt/dq/entrypoint.sh"]
