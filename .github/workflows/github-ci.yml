@@ -31,14 +31,14 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: false
+          push: true
           tags: donchesworth/dask-quik-test:latest
-      # - 
-      #   name: Test with pytest
-      #   run: docker run -it dask-quik-test:latest
-      # - 
-      #   name: Upload codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     fail_ci_if_error: true
-      #     verbose: true
+      - 
+        name: Test with pytest
+        run: docker run -it dask-quik-test:latest
+      - 
+        name: Upload codecov
+        uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: false
+          verbose: true
