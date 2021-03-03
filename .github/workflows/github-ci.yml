@@ -37,7 +37,6 @@ jobs:
           tags: donchesworth/dask-quik-test:latest
       -
         name: Run container
-        run: /opt/dq/entrypoint.sh
         uses: ghcr.io/donchesworth/dask-quik-test:latest
       # -
       #   name: Run container
