@@ -35,8 +35,13 @@ jobs:
           file: Dockerfile
           push: false
           tags: donchesworth/dask-quik-test:latest
-  my_run:
-    container: donchesworth/dask-quik-test:latest
+  container:
+    runs-on: ubuntu-latest
+    image: donchesworth/dask-quik-test:latest
+    steps:
+      -
+        name: Run container
+        run: /opt/dq/entrypoint.sh
       # - 
       #   name: Run container
       #   uses: addnab/docker-run-action@v2
