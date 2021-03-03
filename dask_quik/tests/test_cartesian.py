@@ -89,11 +89,9 @@ def test_indexized_cartesian(sample_data, counts_dict, colv, args):
     """create an indexed cartesian df. If gpus, 
     output should be a dask_cudf df, else dask df"""
     if bool(args.gpus) and not args.has_gpu:
-        print("entered the error")
         with pytest.raises(NameError):
             dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
     else:
-        print("didn't enter")
         dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
         sm = dq.cartesian.dask_cudf_cartesian(dc_ddf, colv, args)
         sm = dq.cartesian.indexize(sm, counts_dict, colv)
