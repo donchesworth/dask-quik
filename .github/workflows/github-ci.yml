@@ -54,7 +54,7 @@ jobs:
       #   with:
       #     fail_ci_if_error: false
       #     verbose: true
-  publish:
+  pypi_publish:
     runs-on: ubuntu-latest
     needs: [docker_build, container_run]
     steps: 
