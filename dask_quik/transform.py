@@ -47,7 +47,7 @@ def gpu_sort_cpu(gdf: dc.DataFrame, idx_col: str) -> dd.DataFrame:
 
     Returns:
         dd.DataFrame: The sorted, partitioned dask DataFrame on CPU
-    """    
+    """
     st = time.time()
     gdf = gdf.set_index(idx_col)
     cdf = gdf.map_partitions(lambda df: df.to_pandas())
@@ -64,8 +64,8 @@ def dc_sort_index(dcdf: dc.DataFrame) -> dc.DataFrame:
 
     Returns:
         dc.DataFrame: newly sorted index for dask_cudf DataFrame
-    """    
+    """
     idx = dcdf.index.name
-    dcdf = dcdf.reset_index().rename(columns={'index':idx})
+    dcdf = dcdf.reset_index().rename(columns={"index": idx})
     dcdf = dcdf.set_index(idx)
     return dcdf

@@ -6,6 +6,7 @@ from dask.distributed import Client
 from argparse import Namespace
 from typing import Union, Optional, Dict, Any
 import warnings
+
 try:
     import dask_cudf as dc
     import cudf
@@ -18,18 +19,19 @@ except ImportError:
 
 dc_dd = Union[dc.DataFrame, dd.DataFrame]
 
-def setup_cluster(worker_space: Optional[str] = None) -> Client:   
-    """ Setup a dask distributed cuda cluster on GPUs. Sometimes
-    if this has been done before, the legacy data needs to be 
+
+def setup_cluster(worker_space: Optional[str] = None) -> Client:
+    """Setup a dask distributed cuda cluster on GPUs. Sometimes
+    if this has been done before, the legacy data needs to be
     removed.
 
     Args:
-        worker_space (Optional[str], optional): The location of the 
+        worker_space (Optional[str], optional): The location of the
         dask-worker-space director. Defaults to None.
 
     Returns:
         Client: A distributed cluster to contain dask or dask_cudf objects.
-    """    
+    """
     if worker_space is not None and os.path.exists(worker_space):
         os.system(f"rm -r {worker_space}/*")
     cluster = LocalCUDACluster(local_directory=worker_space)
@@ -45,7 +47,7 @@ def subdict(cols: Dict[str, Any], subkeys: list) -> Dict[str, Any]:
 
     Returns:
         Dict[str, Any]: A subsetted dictionary
-    """    
+    """
     return {key: cols[key] for key in subkeys}
 
 
@@ -69,8 +71,8 @@ def row_str(dflen: int) -> str:
 
     Returns:
         str: A formatted string with the number of rows (in millions).
-    """    
-    return str(round(dflen/1000000, 1)) + "M rows"
+    """
+    return str(round(dflen / 1000000, 1)) + "M rows"
 
 
 def shrink_dtypes(df: dc_dd, df_dtypes: dict) -> dc_dd:
@@ -82,7 +84,7 @@ def shrink_dtypes(df: dc_dd, df_dtypes: dict) -> dc_dd:
 
     Returns:
         dc_dd: dask_cudf or dd with reduced dtypes
-    """    
+    """
     for colname, newdtype in df_dtypes.items():
         df[colname] = df[colname].astype(newdtype)
     return df

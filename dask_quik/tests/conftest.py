@@ -9,17 +9,18 @@ FINAL = Path.cwd().joinpath("dask_quik", "tests", "final_data.json")
 
 
 def pytest_addoption(parser):
+    parser.addoption("--gpus", type=int, default=0, help="number of gpus per node")
     parser.addoption(
-        "--gpus", type=int, default=0, help="number of gpus per node"
-    )
-    parser.addoption(
-        "--has_gpu", action="store_true", default=False, dest="has_cpu",
-        help="testing on a node with a GPU"
+        "--has_gpu",
+        action="store_true",
+        default=False,
+        dest="has_cpu",
+        help="testing on a node with a GPU",
     )
 
 
 def pytest_generate_tests(metafunc):
-    metafunc.parametrize("gpus", [0,1])
+    metafunc.parametrize("gpus", [0, 1])
 
 
 @pytest.fixture
@@ -30,7 +31,7 @@ def has_gpu(request):
 
 @pytest.fixture
 def args(gpus, has_gpu):
-    """sample args namespace"""    
+    """sample args namespace"""
     args = Namespace()
     args.gpus = gpus
     args.has_gpu = has_gpu
@@ -51,5 +52,5 @@ def final_data():
     """final user/item dataset"""
     with open(FINAL) as f:
         df = pd.DataFrame(json.load(f))
-    df.index.names = ['ui_index']
+    df.index.names = ["ui_index"]
     return df

@@ -95,7 +95,7 @@ def indexize(
         dc (dc_dd): the dask_cudf or dask df to be indexized
         cnts (Dict[str, int]): the counts of each column for permutations
         colv (List[str]): the columns to be indexized
-        rmcols (Optional[bool], optional): whether the original columns should be 
+        rmcols (Optional[bool], optional): whether the original columns should be
         removed. Defaults to False.
 
     Returns:
@@ -153,10 +153,10 @@ def sparse_cudf_matrix(
     sm = sm.merge(
         gdf,
         how="left",
-        on = colv,
+        on=colv,
         npartitions=args.partitions,
         left_index=True,
-        right_index=True
+        right_index=True,
     )
     print("indexed and merged in " + du.sec_str(st), flush=True)
     sm = dt.dc_sort_index(sm)

@@ -2,12 +2,15 @@ import pytest
 import dask.dataframe as dd
 import dask_quik as dq
 
+
 def is_dc_dd(dc_ddf, dc_ddt):
     if bool(dc_ddt):
         import dask_cudf
+
         assert isinstance(dc_ddf, dask_cudf.DataFrame)
-    else: 
+    else:
         assert isinstance(dc_ddf, dd.DataFrame)
+
 
 def test_scatter_gpu(sample_data, args):
     """create a dc_dd using scatter and gpu"""
@@ -32,6 +35,7 @@ def test_gpu_sort_cpu(sample_data, args):
     else:
         pytest.skip()
 
+
 def test_sort_index(sample_data, args):
     """create a dc_dd using scatter and gpu"""
     if bool(args.gpus) and not args.has_gpu:
@@ -40,10 +44,10 @@ def test_sort_index(sample_data, args):
         return
     elif bool(args.gpus):
         df = sample_data.copy()
-        df.index.names = ['ui_index']
+        df.index.names = ["ui_index"]
         dc_ddf = dq.transform.scatter_and_gpu(df, args)
-        dc_ddf = dc_ddf.sort_values('item_id')
+        dc_ddf = dc_ddf.sort_values("item_id")
         dc_ddf = dq.transform.dc_sort_index(dc_ddf)
-        assert(dc_ddf.compute().to_pandas().equals(df))
+        assert dc_ddf.compute().to_pandas().equals(df)
     else:
         pytest.skip()
