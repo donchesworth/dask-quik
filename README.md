@@ -4,4 +4,4 @@
 [![codecov](https://codecov.io/gh/donchesworth/dask-quik/branch/main/graph/badge.svg?token=U92M8C8AFM)](https://codecov.io/gh/donchesworth/dask-quik)
 
 # dask-quik  <img src="dask-quik.png" align="right" width="120" />
-Utilities for transforming data using dask and dask_cudf
+Utilities for transforming data using dask and dask_cudf.
