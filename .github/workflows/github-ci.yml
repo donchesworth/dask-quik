@@ -48,21 +48,29 @@ jobs:
       - name: Run container
         run: |
           /opt/dq/entrypoint.sh
-        # pytest --cov=/opt/dq/dask_quik --cov-report=xml
-        # pytest --cov-config=.coveragerc
-        # bash /opt/dq/entrypoint.sh      
-      # - 
-      #   name: Test with pytest
-      #   run: docker run -it dask-quik-test:latest
-      # - 
-      #   name: Upload codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     fail_ci_if_error: false
-      #     verbose: true
+      - name: Upload coverage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: /opt/dq/coverage.xml
+  coverage_upload:
+    runs-on: ubuntu-latest
+    needs: container_run
+    steps:
+      - name: Download artifact
+        uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: coverage-report
+      - name: codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          verbose: true
   pypi_publish:
     runs-on: ubuntu-latest
-    needs: [docker_build, container_run]
+    needs: container_run
     steps: 
       - name: Publish package
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
