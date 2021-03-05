@@ -47,10 +47,7 @@ jobs:
     steps:
       - name: Run container
         run: |
-          echo pwd
-          ls /opt/dq/dask_quik/tests/
-          pytest --cov=/opt/dq/dask_quik/tests/ --cov-report=xml
-          /opt/dq/entrypoint.sh      
+          bash /opt/dq/entrypoint.sh      
       # - 
       #   name: Test with pytest
       #   run: docker run -it dask-quik-test:latest
