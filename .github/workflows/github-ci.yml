@@ -47,9 +47,6 @@ jobs:
     steps:
       - name: Run container
         run: |
-          echo $(pwd)
-          ls /opt/dq/dask_quik/tests/
-          cd /opt/dq/
           pytest
         # pytest --cov=/opt/dq/dask_quik --cov-report=xml
         # pytest --cov-config=.coveragerc
