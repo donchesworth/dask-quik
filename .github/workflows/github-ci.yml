@@ -49,7 +49,7 @@ jobs:
         run: |
           /opt/dq/entrypoint.sh
       - name: Upload coverage
-      - uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: coverage-report
           path: /opt/dq/coverage.xml
@@ -57,9 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: container_run
     steps:
-      - name: Download artifact
+      - name: Checkout
         uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - name: Download artifact
+        uses: actions/download-artifact@v2
         with:
           name: coverage-report
       - name: codecov
