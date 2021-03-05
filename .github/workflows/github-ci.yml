@@ -49,8 +49,10 @@ jobs:
         run: |
           echo $(pwd)
           ls /opt/dq/dask_quik/tests/
-          cd /opt/dq/dask_quik
+          cd /opt/dq/
           pytest
+        # pytest --cov=/opt/dq/dask_quik --cov-report=xml
+        # pytest --cov-config=.coveragerc
         # bash /opt/dq/entrypoint.sh      
       # - 
       #   name: Test with pytest

@@ -1,3 +1,6 @@
 [tool:pytest]
 addopts = --cov=/opt/dq/dask_quik --cov-report=xml
 testpaths = "tests"
+
+[run]
+source = dask_quik
