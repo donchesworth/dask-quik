@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Run container
         run: |
-          pytest
+          /opt/dq/entrypoint.sh
         # pytest --cov=/opt/dq/dask_quik --cov-report=xml
         # pytest --cov-config=.coveragerc
         # bash /opt/dq/entrypoint.sh      

@@ -1,5 +1,6 @@
 #!/bin/sh
 
-echo $(pwd)
-pytest --cov=. --cov-report=xml
+cd /opt/dq
+pytest
+# pytest --cov=. --cov-report=xml
 # curl https://codecov.io/bash
