@@ -2,6 +2,7 @@ import pytest
 import pandas as pd
 import dask.dataframe as dd
 import dask_quik as dq
+import dask_quik.dummy as dc
 
 
 def t_dc_dd(dc_ddf, dc_ddt):
@@ -12,6 +13,11 @@ def t_dc_dd(dc_ddf, dc_ddt):
     else:
         assert isinstance(dc_ddf, dd.DataFrame)
 
+
+def test_dummy():
+    dum_df = dc.DataFrame()
+    assert isinstance(dum_df, dc.DataFrame)
+    
 
 def test_dask_df(sample_data, args):
     """create a dask df"""
