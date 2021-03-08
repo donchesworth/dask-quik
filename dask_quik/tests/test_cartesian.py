@@ -5,13 +5,6 @@ import dask_quik as dq
 
 
 @pytest.fixture(scope="module")
-def cols_dict():
-    """sample column names"""
-    cols = {"user": "user_number", "item": "item_id"}
-    return cols
-
-
-@pytest.fixture(scope="module")
 def colk(cols_dict):
     """column keys"""
     colk = list(cols_dict.keys())

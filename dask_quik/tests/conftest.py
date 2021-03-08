@@ -46,6 +46,13 @@ def args(gpus):
     return args
 
 
+@pytest.fixture(scope="module")
+def cols_dict():
+    """sample column names"""
+    cols = {"user": "user_number", "item": "item_id"}
+    return cols
+
+
 @pytest.fixture(scope="session")
 def sample_data():
     """sample user/item dataset"""

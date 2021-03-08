@@ -14,6 +14,11 @@ def t_dc_dd(dc_ddf, dc_ddt):
         assert isinstance(dc_ddf, dd.DataFrame)
 
 
+def test_dummy_df(args):
+    dum_df = dc.DataFrame()
+    # dum_call = dum_df.__call__
+    # dum_attr = dum_df.__getattr__
+
 def test_dask_df(sample_data, args):
     """create a dask df"""
     ddf = dd.from_pandas(sample_data, npartitions=args.partitions)
