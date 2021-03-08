@@ -57,6 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: container_run
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2       
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
