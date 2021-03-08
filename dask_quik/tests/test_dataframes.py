@@ -28,7 +28,6 @@ def test_cudf_df(sample_data, args):
         return
     elif bool(args.gpus):
         import cudf
-
         cdf = cudf.from_pandas(sample_data)
         assert isinstance(cdf, cudf.DataFrame)
     else:

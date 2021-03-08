@@ -107,7 +107,7 @@ def test_sparse_matrix(final_data, sample_data, cols_dict, counts_dict, colk, ar
     sm = dq.cartesian.sparse_cudf_matrix(dc_ddf, cols_dict, counts_dict, colk, args)
     is_dc_dd(sm, args.gpus)
     if bool(args.gpus):
-        sm = sm.sort_index().to_pandas()
+        sm = dq.transform.dc_sort_index(sm).compute().to_pandas()
     else:
         sm = sm.compute()
     assert sm.equals(final_data)
