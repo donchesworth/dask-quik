@@ -8,6 +8,7 @@ import dask_quik.utils as du
 
 try:
     import dask_cudf as dc
+    import cudf
 except ImportError:
     warnings.warn(
         "dask_quik.transform unable to import GPU libraries, \
