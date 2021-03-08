@@ -23,31 +23,44 @@ def test_scatter_gpu(sample_data, args):
 
 
 def test_gpu_sort_cpu(sample_data, args):
-    """create a dc_dd using scatter and gpu"""
+    """create a dc_dd using scatter_and_gpu.
+    If gpus=1, scatter_and_gpu will create a 
+    dask_cudf.DataFrame, then it will be sorted
+    and sent back to the CPU. If gpus=0, we'll
+    do the same but all on CPU."""
+    df = sample_data.copy()
     if bool(args.gpus) and not args.has_gpu:
         with pytest.raises(ImportError):
             import cudf
         return
-    elif bool(args.gpus):
-        dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
-        dc_ddf = dq.transform.gpu_sort_cpu(dc_ddf, "user_number")
-        is_dc_dd(dc_ddf, args.gpus)
+    dc_ddf = dq.transform.scatter_and_gpu(df, args)
+    is_dc_dd(dc_ddf, args.gpus)
+    df = df.set_index('item_id').sort_index()
+    if bool(args.gpus):
+        ddf = dq.transform.gpu_sort_cpu(dc_ddf, "item_id")
+        print(ddf.compute())
     else:
-        pytest.skip()
+        ddf = dc_ddf.set_index('item_id')
+        print(ddf.compute())
+    assert(ddf.compute().equals(df))
 
 
-def test_sort_index(sample_data, args):
+def test_dc_sort_index(sample_data, args):
     """create a dc_dd using scatter and gpu"""
     if bool(args.gpus) and not args.has_gpu:
         with pytest.raises(ImportError):
             import cudf
         return
-    elif bool(args.gpus):
-        df = sample_data.copy()
-        df.index.names = ["ui_index"]
-        dc_ddf = dq.transform.scatter_and_gpu(df, args)
+    df = sample_data.copy()
+    df.index.names = ["ui_index"]
+    dc_ddf = dq.transform.scatter_and_gpu(df, args)
+    is_dc_dd(dc_ddf, args.gpus)
+    if bool(args.gpus):
         dc_ddf = dc_ddf.sort_values("item_id")
         dc_ddf = dq.transform.dc_sort_index(dc_ddf)
-        assert dc_ddf.compute().to_pandas().equals(df)
+        dc_ddf = dc_ddf.compute().to_pandas()
     else:
-        pytest.skip()
+        dc_ddf = dc_ddf.reset_index().set_index("item_id")
+        dc_ddf = dc_ddf.reset_index().set_index('ui_index')
+        dc_ddf = dc_ddf[["user_number", "item_id"]].compute()
+    assert dc_ddf.equals(df.sort_index())
