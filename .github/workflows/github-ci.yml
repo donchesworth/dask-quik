@@ -69,7 +69,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage_gpu.xml,coverage_cpu.xml
           flags: gpu, cpu
-          verbose: true
+          verbose: false
   pypi_publish:
     runs-on: ubuntu-latest
     needs: container_run
