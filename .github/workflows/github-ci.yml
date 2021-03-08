@@ -65,7 +65,7 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage_gpu.xml,./coverage_cpu.xml
+          files: coverage_gpu.xml,coverage_cpu.xml
           flags: gpu, cpu
           verbose: true
   pypi_publish:
