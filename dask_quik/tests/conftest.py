@@ -36,7 +36,7 @@ def args(gpus):
     """sample args namespace"""
     args = Namespace()
     args.gpus = gpus
-    args.has_gpu = system("nvidia-smi -L") == 1
+    args.has_gpu = system("nvidia-smi -L") == 0
     if not args.has_gpu:
         warnings.warn(
             "GPU not found, setting has_gpu to False. \
