@@ -8,7 +8,6 @@ import dask_quik.dummy as dc
 def t_dc_dd(dc_ddf, dc_ddt):
     if bool(dc_ddt):
         import dask_cudf
-
         assert isinstance(dc_ddf, dask_cudf.DataFrame)
     else:
         assert isinstance(dc_ddf, dd.DataFrame)

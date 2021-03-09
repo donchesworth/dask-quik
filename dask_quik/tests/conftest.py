@@ -5,8 +5,10 @@ import json
 from argparse import Namespace
 from os import system
 import warnings
+import dask_quik as dq
 
 SAMPLE = Path.cwd().joinpath("dask_quik", "tests", "sample_data.json")
+PROD = Path.cwd().joinpath("dask_quik", "tests", "prod_data.json")
 FINAL = Path.cwd().joinpath("dask_quik", "tests", "final_data.json")
 
 
@@ -49,14 +51,32 @@ def args(gpus):
 @pytest.fixture(scope="module")
 def cols_dict():
     """sample column names"""
-    cols = {"user": "user_number", "item": "item_id"}
+    cols = {"user": "user_number", 
+            "item": "item_id",
+            "prod": "product_id"}
     return cols
+
+
+@pytest.fixture(scope="module")
+def ui_cols(cols_dict):
+    """sample column names"""
+    uicols = dq.utils.subdict(cols_dict, ['user', 'item'])
+    return uicols
+
 
 
 @pytest.fixture(scope="session")
 def sample_data():
     """sample user/item dataset"""
     with open(SAMPLE) as f:
+        df = pd.DataFrame(json.load(f))
+    return df
+
+
+@pytest.fixture(scope="session")
+def prod_data():
+    """sample user/item dataset"""
+    with open(PROD) as f:
         df = pd.DataFrame(json.load(f))
     return df
 

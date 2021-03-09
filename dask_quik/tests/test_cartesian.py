@@ -3,25 +3,24 @@ import pandas as pd
 import dask.dataframe as dd
 import dask_quik as dq
 
-
 @pytest.fixture(scope="module")
-def colk(cols_dict):
+def colk(ui_cols):
     """column keys"""
-    colk = list(cols_dict.keys())
+    colk = list(ui_cols.keys())
     return colk
 
 
 @pytest.fixture(scope="module")
-def colv(cols_dict):
+def colv(ui_cols):
     """column values"""
-    colv = list(cols_dict.values())
+    colv = list(ui_cols.values())
     return colv
 
 
 @pytest.fixture(scope="module")
-def tcol(cols_dict):
+def tcol(ui_cols):
     """two column value"""
-    tcol = "_".join(cols_dict.keys())
+    tcol = "_".join(ui_cols.keys())
     return tcol
 
 
@@ -38,7 +37,6 @@ def counts_dict(sample_data):
 def is_dc_dd(dc_ddf, dc_ddt):
     if bool(dc_ddt):
         import dask_cudf
-
         assert isinstance(dc_ddf, dask_cudf.DataFrame)
     else:
         assert isinstance(dc_ddf, dd.DataFrame)
