@@ -1,6 +1,7 @@
 ARG CUDA_VERSION=10.2
 ARG RAPIDS_VERSION=0.17
-FROM nvidia/cuda:${CUDA_VERSION}-base-centos7
+ARG OS_PLATFORM=centos7
+FROM nvidia/cuda:${CUDA_VERSION}-base-${OS_PLATFORM}
 
 # Labels
 LABEL maintainer="Don Chesworth<donald.chesworth@gmail.com>"
