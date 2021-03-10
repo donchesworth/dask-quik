@@ -82,7 +82,7 @@ jobs:
           python-version: 3.8
       - name: Build
         run: |
-          pip install pathlib
+          pip install pathlib wheel
           python setup.py sdist bdist_wheel
   pypi_publish:
     runs-on: ubuntu-latest
