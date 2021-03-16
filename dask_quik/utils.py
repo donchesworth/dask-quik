@@ -1,8 +1,8 @@
 import os
 import time
 import dask.dataframe as dd
-from dask_cuda import LocalCUDACluster
 from dask.distributed import Client
+from subprocess import check_output, STDOUT
 from argparse import Namespace
 from typing import Union, Optional, Dict, Any
 import warnings
@@ -10,6 +10,7 @@ import warnings
 try:
     import dask_cudf as dc
     import cudf
+    from dask_cuda import LocalCUDACluster
 except ImportError:
     warnings.warn(
         "dask_quik.utils unable to import GPU libraries, \
@@ -88,3 +89,16 @@ def shrink_dtypes(df: dc_dd, df_dtypes: dict) -> dc_dd:
     for colname, newdtype in df_dtypes.items():
         df[colname] = df[colname].astype(newdtype)
     return df
+
+
+def gpus() -> int:
+    """Determines if there are GPUs on the system, and
+    how many
+
+    Returns:
+        int: number of GPUs on the system
+    """
+    gpu_cmd = "nvidia-smi -L | wc -l"
+    gpus = check_output(gpu_cmd, stderr=STDOUT, shell=True)
+    gpus = int(gpus.splitlines()[-1])
+    return gpus
