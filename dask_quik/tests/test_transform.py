@@ -24,7 +24,7 @@ def test_scatter_gpu(sample_data, args):
 
 def test_gpu_sort_cpu(sample_data, args):
     """create a dc_dd using scatter_and_gpu.
-    If gpus=1, scatter_and_gpu will create a 
+    If gpus=1, scatter_and_gpu will create a
     dask_cudf.DataFrame, then it will be sorted
     and sent back to the CPU. If gpus=0, we'll
     do the same but all on CPU."""
@@ -35,14 +35,14 @@ def test_gpu_sort_cpu(sample_data, args):
         return
     dc_ddf = dq.transform.scatter_and_gpu(df, args)
     is_dc_dd(dc_ddf, args.gpus)
-    df = df.set_index('item_id').sort_index()
+    df = df.set_index("item_id").sort_index()
     if bool(args.gpus):
         ddf = dq.transform.gpu_sort_cpu(dc_ddf, "item_id")
         print(ddf.compute())
     else:
-        ddf = dc_ddf.set_index('item_id')
+        ddf = dc_ddf.set_index("item_id")
         print(ddf.compute())
-    assert(ddf.compute().equals(df))
+    assert ddf.compute().equals(df)
 
 
 def test_dc_sort_index(sample_data, args):
@@ -61,6 +61,6 @@ def test_dc_sort_index(sample_data, args):
         dc_ddf = dc_ddf.compute().to_pandas()
     else:
         dc_ddf = dc_ddf.reset_index().set_index("item_id")
-        dc_ddf = dc_ddf.reset_index().set_index('ui_index')
+        dc_ddf = dc_ddf.reset_index().set_index("ui_index")
         dc_ddf = dc_ddf[["user_number", "item_id"]].compute()
     assert dc_ddf.equals(df.sort_index())

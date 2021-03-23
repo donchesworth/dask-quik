@@ -3,6 +3,7 @@ import pandas as pd
 import dask.dataframe as dd
 import dask_quik as dq
 
+
 @pytest.fixture(scope="module")
 def colk(ui_cols):
     """column keys"""
@@ -37,6 +38,7 @@ def counts_dict(sample_data):
 def is_dc_dd(dc_ddf, dc_ddt):
     if bool(dc_ddt):
         import dask_cudf
+
         assert isinstance(dc_ddf, dask_cudf.DataFrame)
     else:
         assert isinstance(dc_ddf, dd.DataFrame)
@@ -79,15 +81,17 @@ def test_indexized_cartesian(sample_data, counts_dict, colv, args):
     """create an indexed cartesian df. If gpus,
     output should be a dask_cudf df, else dask df"""
     if bool(args.gpus) and not args.has_gpu:
-        with pytest.raises(NameError):
-            dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
+        print("unable to test dask_cudf portion")
+        pytest.skip()
     else:
         dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
         sm = dq.cartesian.dask_cudf_cartesian(dc_ddf, colv, args)
         sm = dq.cartesian.indexize(sm, counts_dict, colv)
 
 
-def test_sparse_matrix(final_data, sample_data, cols_dict, counts_dict, colk, args):
+def test_sparse_matrix(
+    final_data, sample_data, cols_dict, counts_dict, colk, args
+):
     """create an indexed cartesian df. If gpus,
     output should be a dask_cudf df, else dask df"""
     if bool(args.gpus) and not args.has_gpu:
@@ -95,7 +99,9 @@ def test_sparse_matrix(final_data, sample_data, cols_dict, counts_dict, colk, ar
             import cudf
         return
     dc_ddf = dq.transform.scatter_and_gpu(sample_data, args)
-    sm = dq.cartesian.sparse_cudf_matrix(dc_ddf, cols_dict, counts_dict, colk, args)
+    sm = dq.cartesian.sparse_cudf_matrix(
+        dc_ddf, cols_dict, counts_dict, colk, args
+    )
     is_dc_dd(sm, args.gpus)
     if bool(args.gpus):
         sm = dq.transform.dc_sort_index(sm).compute().to_pandas()

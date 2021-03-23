@@ -8,6 +8,7 @@ import dask_quik.dummy as dc
 def t_dc_dd(dc_ddf, dc_ddt):
     if bool(dc_ddt):
         import dask_cudf
+
         assert isinstance(dc_ddf, dask_cudf.DataFrame)
     else:
         assert isinstance(dc_ddf, dd.DataFrame)
@@ -17,6 +18,7 @@ def test_dummy_df(args):
     dum_df = dc.DataFrame()
     # dum_call = dum_df.__call__
     # dum_attr = dum_df.__getattr__
+
 
 def test_dask_df(sample_data, args):
     """create a dask df"""
@@ -32,6 +34,7 @@ def test_cudf_df(sample_data, args):
         return
     elif bool(args.gpus):
         import cudf
+
         cdf = cudf.from_pandas(sample_data)
         assert isinstance(cdf, cudf.DataFrame)
     else:

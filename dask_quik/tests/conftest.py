@@ -7,30 +7,33 @@ from os import system
 import warnings
 import dask_quik as dq
 
-SAMPLE = Path.cwd().joinpath("dask_quik", "tests", "sample_data.json")
-PROD = Path.cwd().joinpath("dask_quik", "tests", "prod_data.json")
-FINAL = Path.cwd().joinpath("dask_quik", "tests", "final_data.json")
+TESTDIR = Path(__file__).parent
+SAMPLE = TESTDIR.joinpath("sample_data.json")
+PROD = TESTDIR.joinpath("prod_data.json")
+FINAL = TESTDIR.joinpath("final_data.json")
+REAL = TESTDIR.joinpath("real_data.json")
 
 
 def pytest_addoption(parser):
-    parser.addoption("--gpus", type=int, default=0, help="number of gpus per node")
-    # parser.addoption(
-    #     "--has_gpu",
-    #     action="store_true",
-    #     default=False,
-    #     dest="has_cpu",
-    #     help="testing on a node with a GPU",
-    # )
+    # parser.addoption("--gpus", type=int, default=0,
+    # help="number of gpus per node")
+    parser.addoption(
+        "--has_gpu",
+        action="store_true",
+        default=bool(dq.utils.gpus()),
+        dest="has_cpu",
+        help="testing on a node with a GPU",
+    )
 
 
 def pytest_generate_tests(metafunc):
     metafunc.parametrize("gpus", [0, 1])
 
 
-# @pytest.fixture
-# def has_gpu(request):
-#     """argument whether there actually is a gpu"""
-#     return request.config.getoption("--has_gpu")
+@pytest.fixture
+def has_gpu(request):
+    """argument whether there actually is a gpu"""
+    return request.config.getoption("--has_gpu")
 
 
 @pytest.fixture
@@ -51,18 +54,21 @@ def args(gpus):
 @pytest.fixture(scope="module")
 def cols_dict():
     """sample column names"""
-    cols = {"user": "user_number", 
-            "item": "item_id",
-            "prod": "product_id"}
+    cols = {
+        "user": "user_number",
+        "item": "item_id",
+        "prod": "product_id",
+        "recent": "recency",
+        "late": "latest",
+    }
     return cols
 
 
 @pytest.fixture(scope="module")
 def ui_cols(cols_dict):
     """sample column names"""
-    uicols = dq.utils.subdict(cols_dict, ['user', 'item'])
+    uicols = dq.utils.subdict(cols_dict, ["user", "item"])
     return uicols
-
 
 
 @pytest.fixture(scope="session")
@@ -77,6 +83,14 @@ def sample_data():
 def prod_data():
     """sample user/item dataset"""
     with open(PROD) as f:
+        df = pd.DataFrame(json.load(f))
+    return df
+
+
+@pytest.fixture(scope="session")
+def real_data():
+    """sample user/item dataset"""
+    with open(REAL) as f:
         df = pd.DataFrame(json.load(f))
     return df
 

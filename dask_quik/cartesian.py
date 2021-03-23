@@ -53,13 +53,6 @@ def dask_cudf_cartesian(odf: dc_dd, colv: List[str], args: Namespace) -> dc_dd:
     Returns:
         dc_dd: dask_cudf or dd cartesian product of the original dataframe
     """
-    """
-    Create an cartesian product of two columns using a dummy inner join.
-    This was the best option for dask and cudf. The function:
-    - adds a dummy column with value 0
-    - creates a distinct list of each column (with dummy)
-    - does an inner join of the two lists on the dummy column
-    """
     odf = add_cartesian_dummy(odf)
     if bool(args.gpus):
         gv_list = [
