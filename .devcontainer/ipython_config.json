@@ -1,0 +1,10 @@
+{
+    "InteractiveShellApp": {
+        "extensions": [
+            "autoreload"
+        ],
+        "exec_lines": [
+            "autoreload 2"
+        ]
+    }
+}

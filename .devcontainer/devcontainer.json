@@ -2,47 +2,33 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/python-3-postgres
 // Update the VARIANT arg in docker-compose.yml to pick a Python version: 3, 3.8, 3.7, 3.6 
 {
-	"name": "Rapids Dask Bionic Dev",
+	"name": "Rapids Dask Ubi8 Dev",
+
+	"initializeCommand": "cp dask-quik/requirements.txt .devcontainer/requirements/r1.txt && cp solution-prediction-data/requirements.txt .devcontainer/requirements/r2.txt"
+	,
 
 	"build": {
-		"dockerfile": "Dockerfile",
-		// [Optional] You can use build args to set options. e.g. 'VARIANT' below affects the image in the Dockerfile
-		"args": { "VARIANT": "bionic" }
+		"dockerfile": "Dockerfile"
 	},
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
-		"sqltools.connections": [{
-			"name": "Container database",
-			"driver": "PostgreSQL",
-			"previewLimit": 50,
-			"server": "localhost",
-			"port": 5432,
-			"database": "postgres",
-			"username": "postgres",
-			"password": "postgres"
-		}],
-		"python.pythonPath": "/usr/local/bin/python",
 		"python.linting.enabled": true,
-		"python.linting.pylintEnabled": true,
-		"python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-		"python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-		"python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
-		"python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-		"python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-		"python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-		"python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-		"python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-		"python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
-		"python.testing.pytestPath": "/usr/local/py-utils/bin/pytest"
+		"python.linting.pylintEnabled": false,
+		"python.linting.flake8Enabled": true,
+		"python.formatting.blackPath": "/opt/conda/envs/rd/bin/black",
+		"python.defaultInterpreterPath": "/opt/conda/envs/rd/bin/python",
+		"python.pythonPath": "/opt/conda/envs/rd/bin/python",
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-python.python",
 		"mtxr.sqltools",
-		"mtxr.sqltools-driver-pg"
+		"mtxr.sqltools-driver-pg",
+		"redhat.vscode-yaml",
+		"njpwerner.autodocstring"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -53,4 +39,13 @@
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	// "remoteUser": "vscode"
+	"containerEnv": {
+		"BASEDIR": "/workspaces/dqsp",
+		"DEVDIR": "/workspaces/dqsp/.devcontainer",
+		"PIP_CONFIG_FILE": "/workspaces/dqsp/.devcontainer/pip.conf",
+		"IPYTHONDIR": "/workspaces/dqsp/.ipythondir",
+		"TRUSTED_DOCKER": "True",
+	},
+
+	"postCreateCommand": "bash -i /workspaces/dqsp/.devcontainer/post-create-scripts/deventry.sh"
 }

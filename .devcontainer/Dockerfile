@@ -1,31 +1,22 @@
-ARG CUDA_VERSION=10.2
-ARG RAPIDS_VERSION=0.17
-ARG OS_PLATFORM=ubuntu18.04
-FROM nvidia/cuda:${CUDA_VERSION}-base-${OS_PLATFORM}
+# Using my base rapids-dask container
+# FROM ghcr.io/rapids-dask-ubi8:v2
+FROM quay.io/donchesworth/rapids-dask-pytorch:py38-cuda10.2-rapids0.18-ubi8
 
 # Labels
 LABEL maintainer="Don Chesworth<donald.chesworth@gmail.com>"
 LABEL org.label-schema.schema-version="0.1"
-LABEL org.label-schema.name="rapids_dask"
-LABEL org.label-schema.description="a small base image for using dask and dask_cudf"
+LABEL org.label-schema.name="dqsp_dev_container"
+LABEL org.label-schema.description="a development container for dask-quik and solution-prediction"
 
-# Install conda
-ENV PATH="/opt/conda/envs/dq/bin:/opt/conda/bin:$PATH"
-RUN apt-get update && apt-get -y install wget && apt-get -y install git && \
-    apt-get install -y --no-install-recommends build-essential && \
-    apt-get install -y --no-install-recommends libpq-dev && \
-    wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    chmod +x ~/miniconda.sh &&  ~/miniconda.sh -b -p /opt/conda && conda update conda && \
-    apt-get clean
+ENV PATH="/opt/conda/envs/rd/bin:/opt/conda/bin:$PATH"
+ENV IPYTHONDIR="/opt/rd/.ipythondir/"
 
-# conda package installs
-RUN conda create -n dq python=3.8 && \
-    conda install --name dq -c rapidsai -c nvidia -c conda-forge -c defaults \
-    cudf=${RAPIDS_VERSION} cuml=${RAPIDS_VERSION} dask-cudf=${RAPIDS_VERSION} \
-    dask-cuda=${RAPIDS_VERSION} cudatoolkit=${CUDA_VERSION} && \
-    conda clean --all
+SHELL ["/bin/bash", "-c"]
+RUN source /opt/conda/bin/activate && conda activate rd && \
+    conda install --name rd ipykernel -y
 
-# Setup working dir
-WORKDIR /opt/dq
-RUN chgrp -R 0 /opt/dq/ && \
-    chmod -R g+rwX /opt/dq/
+COPY requirements/ /tmp/
+RUN pip install -r /tmp/r1.txt && pip install -r /tmp/r2.txt && \
+    pip install flake8 black
+
+RUN ipython profile create
