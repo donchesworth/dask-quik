@@ -7,3 +7,4 @@ pandas>=1.1
 pytest
 pytest-cov
 codecov
+dask_ml
