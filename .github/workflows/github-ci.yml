@@ -43,7 +43,11 @@ jobs:
   container_run:
     runs-on: ubuntu-latest
     needs: docker_build
-    container: ghcr.io/donchesworth/dask-quik-test:latest
+    container:
+      image: ghcr.io/donchesworth/dask-quik-test:latest
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
     steps:
       - name: Run container
         run: |
