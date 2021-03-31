@@ -11,7 +11,7 @@ with open(here.joinpath("requirements.txt")) as f:
     all_reqs = f.read().split("\n")
 
 VERSION = {}
-with open(here.joinpath("_version.py")) as fp:
+with open(here.joinpath("dask_quik", "_version.py")) as fp:
     exec(fp.read(), VERSION)
 
 removes = ["git+"]
