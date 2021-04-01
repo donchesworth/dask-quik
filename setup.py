@@ -10,10 +10,6 @@ README = here.joinpath("README.md").read_text()
 with open(here.joinpath("requirements.txt")) as f:
     all_reqs = f.read().split("\n")
 
-VERSION = {}
-with open(here.joinpath("dask_quik", "_version.py")) as fp:
-    exec(fp.read(), VERSION)
-
 removes = ["git+"]
 if system("nvidia-smi -L") != 0:
     removes.extend(["cudf", "cuda"])
@@ -24,7 +20,7 @@ install_requires = [
 
 setup(
     name="dask-quik",
-    version=VERSION,
+    version="0.0.2",
     description="function to make working in dask_cudf and dask quik-er",
     long_description=README,
     long_description_content_type="text/markdown",

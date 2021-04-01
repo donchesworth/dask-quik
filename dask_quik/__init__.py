@@ -5,4 +5,5 @@ import dask_quik.utils
 import dask_quik.dummy
 import dask_quik.split
 
+__version__ = "0.0.2"
 __all__ = ["cartesian", "combine", "transform", "dummy", "utils", "split"]
