@@ -37,7 +37,7 @@ def tt_leave_one_out(
         args (Namespace): argumnets for train, (valid), test, and seed.
 
     Returns:
-        List[pd.DataFrame]: A list of pandas dataframes for train, (valid), 
+        List[pd.DataFrame]: A list of pandas dataframes for train, (valid),
         and test.
     """
     te_ddf = ddf[(ddf.latest == 1) | (ddf.rating == -1)]
