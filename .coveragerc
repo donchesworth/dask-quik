@@ -1,5 +1,3 @@
 [run]
 source = dask_quik
-omit = 
-    *tests*
-    _version.py
+omit = *tests*
