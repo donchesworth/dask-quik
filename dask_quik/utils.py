@@ -6,6 +6,7 @@ from subprocess import check_output, STDOUT
 from argparse import Namespace
 from typing import Union, Optional, Dict, Any
 import warnings
+import dask_quik.utils as du
 
 try:
     import dask_cudf as dc
@@ -21,13 +22,14 @@ except ImportError:
 dc_dd = Union[dc.DataFrame, dd.DataFrame]
 
 
-def setup_cluster(worker_space: Optional[str] = None) -> Client:
+def setup_cluster(use_gpus: Optional[int] = None, worker_space: Optional[str] = None) -> Client:
     """Setup a dask distributed cuda cluster on GPUs. Sometimes
     if this has been done before, the legacy data needs to be
     removed.
 
     Args:
-        worker_space (Optional[str], optional): The location of the
+        use_gpus (int, optional): Number of gpus to use
+        worker_space (str, optional): The location of the
         dask-worker-space director. Defaults to None.
 
     Returns:
@@ -35,8 +37,16 @@ def setup_cluster(worker_space: Optional[str] = None) -> Client:
     """
     if worker_space is not None and os.path.exists(worker_space):
         os.system(f"rm -r {worker_space}/*")
-    cluster = LocalCUDACluster(local_directory=worker_space)
-    return Client(cluster)
+    if use_gpus is None:
+        use_gpus = gpus()
+    if bool(use_gpus):
+        cluster = LocalCUDACluster(n_workers=use_gpus,
+                                   local_directory=worker_space)
+        print("GPU cluster has been established", flush=True)
+    else:
+        cluster = None
+        print("No GPUs found - running cluster on CPU.", flush=True)
+    return Client(address=cluster)
 
 
 def subdict(cols: Dict[str, Any], subkeys: list) -> Dict[str, Any]:
