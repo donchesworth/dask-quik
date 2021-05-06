@@ -48,10 +48,12 @@ def tt_leave_one_out(
         test_size=args.test_size,
         random_state=args.seed,
     )
-    tt_dict = {"train": tr_ddf, "test": te_ddf}
+    tkeys = ["train", "test"]
+    ddf_list = [tr_ddf, te_ddf]
     if args.valid_size > 0:
-        tt_dict['valid'] = vl_ddf
+        tkeys.append('valid')
+        ddf_list.append(vl_ddf)
     colk = ["user", "item", "late", "rate"]
     t_cols = list(du.subdict(cols, colk).values())
-    tt_dict = {kt: dask.compute(ddf[t_cols]) for kt, ddf in tt_dict.items()}
-    return tt_dict
+    ddf_list = dask.compute(*[ddf[t_cols] for ddf in ddf_list])
+    return dict(zip(tkeys, ddf_list))
