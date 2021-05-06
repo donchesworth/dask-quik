@@ -20,7 +20,7 @@ install_requires = [
 
 setup(
     name="dask-quik",
-    version="0.0.3",
+    version="0.0.4",
     description="function to make working in dask_cudf and dask quik-er",
     long_description=README,
     long_description_content_type="text/markdown",
