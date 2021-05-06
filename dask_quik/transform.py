@@ -32,7 +32,7 @@ def scatter_and_gpu(cdf: pd.DataFrame, args: Namespace) -> dc_dd:
         cdf dc_dd: the final df
     """
     cdf = dd.from_pandas(cdf, npartitions=args.partitions)
-    if bool(du.gpus()):
+    if bool(args.gpus):
         cdf = cdf.map_partitions(cudf.DataFrame.from_pandas)
     return cdf
 
