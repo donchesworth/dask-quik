@@ -53,7 +53,8 @@ def tt_leave_one_out(
     if args.valid_size > 0:
         tkeys.append('valid')
         ddf_list.append(vl_ddf)
-    colk = ["user", "item", "late", "rate"]
+    # colk = ["user", "item", "late", "rate"]
+    colk = ["user", "item", "rate"]
     t_cols = list(du.subdict(cols, colk).values())
     ddf_list = dask.compute(*[ddf[t_cols] for ddf in ddf_list])
     return dict(zip(tkeys, ddf_list))
