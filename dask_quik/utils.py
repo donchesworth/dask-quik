@@ -3,10 +3,10 @@ import time
 import dask.dataframe as dd
 from dask.distributed import Client
 from subprocess import check_output, STDOUT
-from argparse import Namespace
 from typing import Union, Optional, Dict, Any
 import warnings
-import dask_quik.utils as du
+import logging
+import sys
 
 try:
     import dask_cudf as dc
@@ -20,6 +20,9 @@ except ImportError:
     import dask_quik.dummy as dc
 
 dc_dd = Union[dc.DataFrame, dd.DataFrame]
+logging.basicConfig(stream=sys.stdout)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def setup_cluster(use_gpus: Optional[int] = None, worker_space: Optional[str] = None) -> Client:
@@ -42,10 +45,10 @@ def setup_cluster(use_gpus: Optional[int] = None, worker_space: Optional[str] = 
     if bool(use_gpus):
         cluster = LocalCUDACluster(n_workers=use_gpus,
                                    local_directory=worker_space)
-        print("GPU cluster has been established", flush=True)
+        logger.info("GPU cluster has been established")
     else:
         cluster = None
-        print("No GPUs found - running cluster on CPU.", flush=True)
+        logger.info("No GPUs found - running cluster on CPU.")
     return Client(address=cluster)
 
 
@@ -69,7 +72,7 @@ def sec_str(start_time: float) -> str:
         start_time (float): output from time.time() earlier in the program
 
     Returns:
-        str: A formatted string with the seconds that a code segment took to run
+        str: A formatted string with the seconds for execution time.
     """
     return str(round(time.time() - start_time, 2)) + " seconds"
 
@@ -111,4 +114,5 @@ def gpus() -> int:
     gpu_cmd = "nvidia-smi -L | wc -l"
     gpus = check_output(gpu_cmd, stderr=STDOUT, shell=True)
     gpus = int(gpus.splitlines()[-1])
-    return gpus
+    logger.info(f"{gpus} gpus found by polling nvidia-smi")
+    return None if gpus == 0 else gpus
